@@ -12,8 +12,9 @@ sudo systemctl enable docker
 sudo usermod -aG docker ec2-user
 
 # Instalando Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/download/2.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.19.1/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
+
 
 # Configurando a aplicação
 APP_DIR="/app"
@@ -27,5 +28,6 @@ sudo yum install -y git
 sudo git clone https://github.com/lucasarags/desafio_devops.git $APP_DIR
 
 # Subindo a aplicação com Docker Compose
-cd $APP_DIR
-sudo docker-compose up -d
+cd $APP_DIR$APP_DIR
+sudo /usr/local/bin/docker-compose up -d
+
