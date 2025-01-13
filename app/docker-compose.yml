@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:80"   # A aplicação estará acessível na porta 8080 no seu local
+    container_name: my_hello_world_app
+    networks:
+      - webnet
+
+networks:
+  webnet:
+    driver: bridge

@@ -1,0 +1,5 @@
+# Ignorar arquivos .terraform
+.terraform/
+
+# Ignorar arquivos .terraform.lock.hcl
+.terraform.lock.hcl
