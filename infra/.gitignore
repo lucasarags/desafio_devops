@@ -3,3 +3,5 @@
 
 # Ignorar arquivos .terraform.lock.hcl
 .terraform.lock.hcl
+
+terraform.tfstate*
