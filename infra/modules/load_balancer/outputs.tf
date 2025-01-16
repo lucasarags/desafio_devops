@@ -18,6 +18,6 @@ output "alb_name" {
 
 output "alb_arn_suffix" {
   description = "Parte específica do ARN do Application Load Balancer que você precisa acessar"
-  value        = "${join("/", slice(split("/", aws_lb.alb.arn), 1, length(split("/", aws_lb.alb.arn))))}"
+  value        = join("/", slice(split("/", aws_lb.alb.arn), 1, length(split("/", aws_lb.alb.arn))))
 }
 
