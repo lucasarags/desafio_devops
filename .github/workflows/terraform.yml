@@ -44,6 +44,14 @@ jobs:
             echo "[arags]" >> ~/.aws/config  
             echo "region=us-east-1" >> ~/.aws/config
 
+        # Exibe o conteúdo dos arquivos de configuração para depuração
+        - name: Print AWS config and credentials
+          run: |
+            echo "AWS Credentials:"
+            cat ~/.aws/credentials
+            echo "AWS Config:"
+            cat ~/.aws/config
+
         # Verifica se o perfil foi configurado corretamente
         - name: Verify AWS credentials
           run: |
