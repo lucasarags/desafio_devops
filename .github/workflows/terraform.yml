@@ -23,7 +23,7 @@ jobs:
 
     runs-on: ubuntu-latest
     #environment: production
-    
+
     steps:
         # Checkout the repository to the GitHub Actions runner
         - name: Checkout
@@ -32,7 +32,7 @@ jobs:
         - name: Configure AWS Credentials
           run: |
             mkdir -p ~/.aws
-            echo "[arags]" > ~/.aws/credentials 
+            echo "[profile arags]" > ~/.aws/credentials 
             echo "aws_access_key_id=${{ secrets.AWS_DEVOPS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
             echo "aws_secret_access_key=${{ secrets.AWS_DEVOPS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
             echo "[profile arags]" > ~/.aws/config
