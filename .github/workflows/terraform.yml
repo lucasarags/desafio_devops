@@ -16,7 +16,15 @@ on:
 jobs:
   terraform:
     name: 'Terraform'
+    env:
+      # AWS secrets
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_DEVOPS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_DEVOPS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: "us-east-1"
+      AWS_DEFAULT_OUTPUT: "json"
+
     runs-on: ubuntu-latest
+    #evironment: production
 
     defaults:
       run:
@@ -27,15 +35,6 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v4
 
-        # Configura as credenciais da AWS
-        - name: Set up AWS credentials
-          uses: aws-actions/configure-aws-credentials@v1
-          with:
-            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_DEVOPS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_DEVOPS_SECRET_ACCESS_KEY }}
-            AWS-REGION: ${{ secrets.AWS_DEVOPS_REGION }}
-            AWS-PROFILE: ${{ secrets.AWS_DEVOPS_PROFILE }}
-
         # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
         - name: Terraform Init
           uses: hashicorp/terraform-github-actions@master
@@ -45,7 +44,7 @@ jobs:
             tf_actions_working_dir: './infra'
             tf_actions_comment: true
 
-        # Validação do código Terraform
+          # Validação do código Terraform
         - name: Terraform Validate
           uses: hashicorp/terraform-github-actions@master
           with:
@@ -74,6 +73,7 @@ jobs:
             tf_actions_comment: true
             args: '-auto-approve -input=false plan.tfplan'
            
+          
         - name: Terraform destroy
           if: ${{ github.event.inputs.terraform_action == 'destroy' }}
           uses: hashicorp/terraform-github-actions@master
@@ -83,3 +83,4 @@ jobs:
             tf_actions_working_dir: './infra'
             tf_actions_comment: true
             args: '-auto-approve'
+     
