@@ -44,6 +44,10 @@ jobs:
             aws-secret-access-key: ${{ secrets.AWS_DEVOPS_SECRET_ACCESS_KEY }}
             aws-region: "us-east-1"
             aws-profile: "arags"
+        
+        - name: Verify AWS credentials
+          run: |
+            aws sts get-caller-identity --profile arags
 
         # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
         - name: Terraform Init
