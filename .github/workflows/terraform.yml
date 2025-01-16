@@ -17,6 +17,7 @@ jobs:
   terraform:
     name: 'Terraform'
     env:
+      # AWS secrets
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_DEVOPS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_DEVOPS_SECRET_ACCESS_KEY }}
 
@@ -33,11 +34,22 @@ jobs:
           uses: actions/checkout@v4
 
         - name: Configure AWS Credentials
-          uses: aws-actions/configure-aws-credentials@v1
-          with:
-            aws-access-key-id: ${{ secrets.AWS_DEVOPS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.AWS_DEVOPS_SECRET_ACCESS_KEY }}
-            aws-region: 'us-east-1'
+          run: |
+            mkdir -p ~/.aws
+            echo "[default]" > ~/.aws/credentials 
+            echo "aws_access_key_id=${{ secrets.AWS_DEVOPS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
+            echo "aws_secret_access_key=${{ secrets.AWS_DEVOPS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+            echo "[default]" > ~/.aws/config
+            echo "region=us-east-1" >> ~/.aws/config
+  
+
+        # Exibe o conteúdo dos arquivos de configuração para depuração
+        - name: Print AWS config and credentials
+          run: |
+            echo "AWS Credentials:"
+            cat ~/.aws/credentials
+            echo "AWS Config:"
+            cat ~/.aws/config
 
         # Verifica se o perfil foi configurado corretamente
         - name: Verify AWS credentials
