@@ -23,11 +23,7 @@ jobs:
 
     runs-on: ubuntu-latest
     #environment: production
-
-    defaults:
-      run:
-        shell: bash
-
+    
     steps:
         # Checkout the repository to the GitHub Actions runner
         - name: Checkout
@@ -41,7 +37,7 @@ jobs:
             echo "aws_secret_access_key=${{ secrets.AWS_DEVOPS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
             echo "[profile arags]" > ~/.aws/config
             echo "region=us-east-1" >> ~/.aws/config
-            echo "output = json" >> ~/.aws/config
+            echo "output=json" >> ~/.aws/config
   
 
         # Exibe o conteúdo dos arquivos de configuração para depuração
