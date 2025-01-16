@@ -82,7 +82,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         type = "metric",
         properties = {
           metrics = [
-            ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", "${module.load_balancer.alb_arn_suffix}"]
+            ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", module.load_balancer.alb_arn_suffix]
           ],
           period = 300,
           stat   = "Sum",
@@ -95,7 +95,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         type = "metric",
         properties = {
           metrics = [
-            ["AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "${module.load_balancer.alb_arn_suffix}"]
+            ["AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", module.load_balancer.alb_arn_suffix]
           ],
           period = 300,
           stat   = "Average",
@@ -108,7 +108,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         type = "metric",
         properties = {
           metrics = [
-            ["AWS/ApplicationELB", "HealthyHostCount", "LoadBalancer", "${module.load_balancer.alb_arn_suffix}"]
+            ["AWS/ApplicationELB", "HealthyHostCount", "LoadBalancer", module.load_balancer.alb_arn_suffix]
           ],
           period = 300,
           stat   = "Average",
@@ -127,7 +127,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         type = "metric",
         properties = {
           metrics = [
-            ["AWS/EC2", "CPUUtilization", "AutoScalingGroupName", "${module.autoscaling_group.auto_scaling_group_name}"]
+            ["AWS/EC2", "CPUUtilization", "AutoScalingGroupName", module.autoscaling_group.auto_scaling_group_name]
           ],
           period = 300,
           stat   = "Average",
@@ -140,7 +140,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         type = "metric",
         properties = {
           metrics = [
-            ["AWS/EC2", "NetworkIn", "AutoScalingGroupName", "${module.autoscaling_group.auto_scaling_group_name}"]
+            ["AWS/EC2", "NetworkIn", "AutoScalingGroupName", module.autoscaling_group.auto_scaling_group_name]
           ],
           period = 300,
           stat   = "Sum",
@@ -153,7 +153,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         type = "metric",
         properties = {
           metrics = [
-            ["AWS/EC2", "NetworkOut", "AutoScalingGroupName", "${module.autoscaling_group.auto_scaling_group_name}"]
+            ["AWS/EC2", "NetworkOut", "AutoScalingGroupName", module.autoscaling_group.auto_scaling_group_name]
           ],
           period = 300,
           stat   = "Sum",
