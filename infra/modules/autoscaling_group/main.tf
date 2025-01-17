@@ -11,6 +11,10 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
   }
 
   service_linked_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
+
+    lifecycle {
+    create_before_destroy = true
+  }
 }
 
 data "aws_caller_identity" "current" {}
