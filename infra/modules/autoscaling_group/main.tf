@@ -7,7 +7,7 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
 
   launch_template {
     id      = var.launch_template_id
-    version = "$Latest"
+    version = var.launch_template_version
   }
 
   service_linked_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
