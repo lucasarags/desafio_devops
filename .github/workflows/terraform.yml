@@ -70,7 +70,7 @@ jobs:
           tf_actions_subcommand: 'plan'
           tf_actions_working_dir: './infra'
           tf_actions_comment: true
-          args: '-out=plan.tfplan -json'
+          args: '-out=plan.tfplan'
 
       - name: Check for Launch Template Changes
         id: check_launch_template
