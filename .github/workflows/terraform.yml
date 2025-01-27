@@ -79,6 +79,7 @@ jobs:
             echo "replace_asg=true" >> $GITHUB_ENV
           else
             echo "replace_asg=false" >> $GITHUB_ENV
+          fi
 
       - name: Set Terraform Apply Args
         id: set_args
@@ -88,6 +89,7 @@ jobs:
             echo "TF_ARGS=-replace=aws_autoscaling_group.auto_scaling_group -auto-approve -input=false plan.tfplan" >> $GITHUB_ENV
           else
             echo "TF_ARGS=-auto-approve -input=false plan.tfplan" >> $GITHUB_ENV
+          fi
 
       - name: Terraform Apply
         if: ${{ github.event.inputs.terraform_action == 'apply' }}
