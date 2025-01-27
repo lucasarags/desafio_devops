@@ -75,7 +75,13 @@ jobs:
       - name: Check for Launch Template Changes
         id: check_launch_template
         run: |
-          if terraform show plan.tfplan | grep -q "Launch Template"; then
+          # Gera o plano em formato JSON
+          terraform show -json plan.tfplan > plan.json
+          
+          # Verifica se há alterações no Launch Template usando jq
+          launch_template_change=$(jq '.resource_changes[] | select(.type == "aws_launch_template" and (.change.actions[] == "update" or .change.actions[] == "create"))' plan.json)
+
+          if [[ -n "$launch_template_change" ]]; then
             echo "replace_asg=true" >> $GITHUB_ENV
             echo "Launch Template detected, replace_asg set to true"
           else
