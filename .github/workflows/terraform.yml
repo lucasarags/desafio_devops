@@ -83,7 +83,8 @@ jobs:
       - name: Set Terraform Apply Args
         id: set_args
         run: |
-          if [ "${replace_asg}" = "true" ]; then
+          echo "replace_asg=${{ env.replace_asg }}"  # Check the value of replace_asg
+          if [ "${{ env.replace_asg }}" = "true" ]; then
             echo "TF_ARGS=-replace=aws_autoscaling_group.auto_scaling_group -auto-approve -input=false plan.tfplan" >> $GITHUB_ENV
           else
             echo "TF_ARGS=-auto-approve -input=false plan.tfplan" >> $GITHUB_ENV
