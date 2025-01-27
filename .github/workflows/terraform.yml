@@ -72,13 +72,22 @@ jobs:
           tf_actions_comment: true
           args: '-out=plan.tfplan'
 
+      - name: Terraform Show (Generate Plan JSON)
+        id: terraform_show
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: '0.14.3'
+          tf_actions_subcommand: 'show'
+          tf_actions_working_dir: './infra'
+          tf_actions_comment: true
+          args: '-json plan.tfplan'
+
       - name: Check for Launch Template Changes
         id: check_launch_template
         run: |
-          terraform show -json plan.tfplan > plan.json
-          
+          # Verifica se há alterações no Launch Template usando jq
           launch_template_change=$(jq '.resource_changes[] | select(.type == "aws_launch_template" and (.change.actions[] == "update" or .change.actions[] == "create"))' plan.json)
-
+    
           if [[ -n "$launch_template_change" ]]; then
             echo "replace_asg=true" >> $GITHUB_ENV
             echo "Launch Template detected, replace_asg set to true"
@@ -90,12 +99,12 @@ jobs:
       - name: Set Terraform Apply Args
         id: set_args
         run: |
-          echo "replace_asg=${{ env.replace_asg }}"  # Check the value of replace_asg
+          echo "replace_asg=${{ env.replace_asg }}"  # Verifica o valor de replace_asg
           if [ "${{ env.replace_asg }}" = "true" ]; then
             echo "TF_ARGS=-replace=aws_autoscaling_group.auto_scaling_group -auto-approve -input=false plan.tfplan" >> $GITHUB_ENV
           else
             echo "TF_ARGS=-auto-approve -input=false plan.tfplan" >> $GITHUB_ENV
-          fi
+          fi  
 
       - name: Terraform Apply
         if: ${{ github.event.inputs.terraform_action == 'apply' }}
