@@ -77,8 +77,10 @@ jobs:
         run: |
           if terraform show plan.tfplan | grep -q "Launch Template"; then
             echo "replace_asg=true" >> $GITHUB_ENV
+            echo "Launch Template detected, replace_asg set to true"
           else
             echo "replace_asg=false" >> $GITHUB_ENV
+            echo "No Launch Template changes detected, replace_asg set to false"
           fi
 
       - name: Set Terraform Apply Args

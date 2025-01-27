@@ -4,6 +4,7 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
   min_size            = var.min_size
   vpc_zone_identifier = var.subnet_ids
   target_group_arns   = var.target_group_arns
+  force_new = true
 
   launch_template {
     id      = var.launch_template_id
