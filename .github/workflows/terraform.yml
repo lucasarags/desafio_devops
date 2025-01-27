@@ -5,10 +5,10 @@ on:
     inputs:
       terraform_action:
         type: choice
-        description: select terraform action
+        description: Select Terraform Action
         options:
-        - apply
-        - destroy
+          - apply
+          - destroy
         required: true
   push:
     branches: [ "main" ]
@@ -17,86 +17,94 @@ jobs:
   terraform:
     name: 'Terraform'
     env:
-      # AWS secrets
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_DEVOPS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_DEVOPS_SECRET_ACCESS_KEY }}
+      replace_asg: ${{ secrets.REPLACE_ASG || 'false' }}
 
     runs-on: ubuntu-latest
-    #environment: production
 
     steps:
-        # Checkout the repository to the GitHub Actions runner
-        - name: Checkout
-          uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-        - name: Configure AWS Credentials
-          run: |
-            mkdir -p ~/.aws
-            echo "[arags]" > ~/.aws/credentials 
-            echo "aws_access_key_id=${{ secrets.AWS_DEVOPS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
-            echo "aws_secret_access_key=${{ secrets.AWS_DEVOPS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
-            echo "[profile arags]" > ~/.aws/config
-            echo "region=us-east-1" >> ~/.aws/config
-            echo "output=json" >> ~/.aws/config
+      - name: Configure AWS Credentials
+        run: |
+          mkdir -p ~/.aws
+          echo "[arags]" > ~/.aws/credentials 
+          echo "aws_access_key_id=${{ secrets.AWS_DEVOPS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
+          echo "aws_secret_access_key=${{ secrets.AWS_DEVOPS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+          echo "[profile arags]" > ~/.aws/config
+          echo "region=us-east-1" >> ~/.aws/config
+          echo "output=json" >> ~/.aws/config
   
+      - name: Print AWS Config and Credentials
+        run: |
+          echo "AWS Credentials:"
+          cat ~/.aws/credentials
+          echo "AWS Config:"
+          cat ~/.aws/config
 
-        # Exibe o conteúdo dos arquivos de configuração para depuração
-        - name: Print AWS config and credentials
-          run: |
-            echo "AWS Credentials:"
-            cat ~/.aws/credentials
-            echo "AWS Config:"
-            cat ~/.aws/config
+      - name: Verify AWS Credentials
+        run: aws sts get-caller-identity --profile arags
 
-        # Verifica se o perfil foi configurado corretamente
-        - name: Verify AWS credentials
-          run: |
-            aws sts get-caller-identity --profile arags
+      - name: Terraform Init
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: '0.14.3'
+          tf_actions_subcommand: 'init'
+          tf_actions_working_dir: './infra'
+          tf_actions_comment: true
 
-        # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-        - name: Terraform Init
-          uses: hashicorp/terraform-github-actions@master
-          with:
-            tf_actions_version: '0.14.3'
-            tf_actions_subcommand: 'init'
-            tf_actions_working_dir: './infra'
-            tf_actions_comment: true
-
-        # Validação do código Terraform
-        - name: Terraform Validate
-          uses: hashicorp/terraform-github-actions@master
-          with:
-            tf_actions_version: '0.14.3'
-            tf_actions_subcommand: 'validate'
-            tf_actions_working_dir: './infra'
-            tf_actions_comment: true
+      - name: Terraform Validate
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: '0.14.3'
+          tf_actions_subcommand: 'validate'
+          tf_actions_working_dir: './infra'
+          tf_actions_comment: true
   
-        # Plano do Terraform
-        - name: Terraform Plan
-          uses: hashicorp/terraform-github-actions@master
-          with:
-            tf_actions_version: '0.14.3'
-            tf_actions_subcommand: 'plan'
-            tf_actions_working_dir: './infra'
-            tf_actions_comment: true
-            args: '-out=plan.tfplan'
+      - name: Terraform Plan
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: '0.14.3'
+          tf_actions_subcommand: 'plan'
+          tf_actions_working_dir: './infra'
+          tf_actions_comment: true
+          args: '-out=plan.tfplan'
 
-        - name: Terraform apply
-          if: ${{ github.event.inputs.terraform_action == 'apply' }}
-          uses: hashicorp/terraform-github-actions@master
-          with:
-            tf_actions_version: '0.14.3'
-            tf_actions_subcommand: ${{ github.event.inputs.terraform_action }}
-            tf_actions_working_dir: './infra'
-            tf_actions_comment: true
-            args: '-auto-approve -input=false plan.tfplan'
+      - name: Check for Launch Template Changes
+        id: check_launch_template
+        run: |
+          if terraform show plan.tfplan | grep -q "Launch Template"; then
+            echo "replace_asg=true" >> $GITHUB_ENV
+          else
+            echo "replace_asg=false" >> $GITHUB_ENV
+          fi
+
+      - name: Set Terraform Apply Args
+        id: set_args
+        run: |
+          if [ "${{ env.replace_asg }}" = "true" ]; then
+            echo "TF_ARGS=-replace=aws_autoscaling_group.auto_scaling_group -auto-approve -input=false plan.tfplan" >> $GITHUB_ENV
+          else
+            echo "TF_ARGS=-auto-approve -input=false plan.tfplan" >> $GITHUB_ENV
+
+      - name: Terraform Apply
+        if: ${{ github.event.inputs.terraform_action == 'apply' }}
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: '0.14.3'
+          tf_actions_subcommand: ${{ github.event.inputs.terraform_action }}
+          tf_actions_working_dir: './infra'
+          tf_actions_comment: true
+          args: '${{ env.TF_ARGS }}'
            
-        - name: Terraform destroy
-          if: ${{ github.event.inputs.terraform_action == 'destroy' }}
-          uses: hashicorp/terraform-github-actions@master
-          with:
-            tf_actions_version: '0.14.3'
-            tf_actions_subcommand: ${{ github.event.inputs.terraform_action }}
-            tf_actions_working_dir: './infra'
-            tf_actions_comment: true
-            args: '-auto-approve'
+      - name: Terraform Destroy
+        if: ${{ github.event.inputs.terraform_action == 'destroy' }}
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: '0.14.3'
+          tf_actions_subcommand: ${{ github.event.inputs.terraform_action }}
+          tf_actions_working_dir: './infra'
+          tf_actions_comment: true
+          args: '-auto-approve'
