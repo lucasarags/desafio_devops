@@ -36,7 +36,7 @@ jobs:
           echo "[profile arags]" > ~/.aws/config
           echo "region=us-east-1" >> ~/.aws/config
           echo "output=json" >> ~/.aws/config
-  
+          
       - name: Print AWS Config and Credentials
         run: |
           echo "AWS Credentials:"
@@ -62,7 +62,7 @@ jobs:
           tf_actions_subcommand: 'validate'
           tf_actions_working_dir: './infra'
           tf_actions_comment: true
-  
+
       - name: Terraform Plan
         uses: hashicorp/terraform-github-actions@master
         with:
@@ -79,12 +79,11 @@ jobs:
             echo "replace_asg=true" >> $GITHUB_ENV
           else
             echo "replace_asg=false" >> $GITHUB_ENV
-          fi
 
       - name: Set Terraform Apply Args
         id: set_args
         run: |
-          if [ "${{ env.replace_asg }}" = "true" ]; then
+          if [ "${replace_asg}" = "true" ]; then
             echo "TF_ARGS=-replace=aws_autoscaling_group.auto_scaling_group -auto-approve -input=false plan.tfplan" >> $GITHUB_ENV
           else
             echo "TF_ARGS=-auto-approve -input=false plan.tfplan" >> $GITHUB_ENV
