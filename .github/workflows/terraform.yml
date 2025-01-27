@@ -72,6 +72,17 @@ jobs:
           tf_actions_comment: true
           args: '-out=plan.tfplan'
 
+      - name: Install Terraform
+        run: |
+          T_VERSION="1.5.6" # Substitua pela versão desejada
+          curl -fsSL https://releases.hashicorp.com/terraform/${T_VERSION}/terraform_${T_VERSION}_linux_amd64.zip -o terraform.zip
+          unzip terraform.zip
+          sudo mv terraform /usr/local/bin/
+          terraform version
+          
+      - name: Generate JSON Plan
+        run: terraform show -json plan.tfplan > plan.json
+
       - name: Check for Launch Template Changes
         id: check_launch_template
         run: |
