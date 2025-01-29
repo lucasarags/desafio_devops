@@ -113,7 +113,7 @@ jobs:
           tf_actions_subcommand: ${{ github.event.inputs.terraform_action }}
           tf_actions_working_dir: './infra'
           tf_actions_comment: true
-          args: '-replace=aws_autoscaling_group.auto_scaling_group -auto-approve -input=false plan.tfplan'
+          args: '-auto-approve -input=false plan.tfplan'
            
       - name: Terraform Destroy
         if: ${{ github.event.inputs.terraform_action == 'destroy' }}
