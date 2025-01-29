@@ -19,7 +19,6 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_DEVOPS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_DEVOPS_SECRET_ACCESS_KEY }}
-      replace_asg: false
 
     runs-on: ubuntu-latest
 
@@ -71,39 +70,6 @@ jobs:
           tf_actions_working_dir: './infra'
           tf_actions_comment: true
           args: '-out=plan.tfplan'
-
-      # - name: Install Terraform
-      #   run: |
-      #     T_VERSION="1.5.6" # Substitua pela versão desejada
-      #     curl -fsSL https://releases.hashicorp.com/terraform/${T_VERSION}/terraform_${T_VERSION}_linux_amd64.zip -o terraform.zip
-      #     unzip terraform.zip
-      #     sudo mv terraform /usr/local/bin/
-      #     terraform version
-
-      # - name: Check for Launch Template Changes
-      #   id: check_launch_template
-      #   run: |
-      #     terraform show -json plan.tfplan > plan.json
-          
-      #     launch_template_change=$(jq '.resource_changes[] | select(.type == "aws_launch_template" and (.change.actions[] == "update" or .change.actions[] == "create"))' plan.json)
-
-      #     if [[ -n "$launch_template_change" ]]; then
-      #       echo "replace_asg=true" >> $GITHUB_ENV
-      #       echo "Launch Template detected, replace_asg set to true"
-      #     else
-      #       echo "replace_asg=false" >> $GITHUB_ENV
-      #       echo "No Launch Template changes detected, replace_asg set to false"
-      #     fi
-
-      # - name: Set Terraform Apply Args
-      #   id: set_args
-      #   run: |
-      #     echo "replace_asg=${{ env.replace_asg }}"  # Verifica o valor de replace_asg
-      #     if [ "${{ env.replace_asg }}" = "true" ]; then
-      #       echo "TF_ARGS=-replace=aws_autoscaling_group.auto_scaling_group -auto-approve -input=false plan.tfplan" >> $GITHUB_ENV
-      #     else
-      #       echo "TF_ARGS=-auto-approve -input=false plan.tfplan" >> $GITHUB_ENV
-      #     fi  
 
       - name: Terraform Apply
         if: ${{ github.event.inputs.terraform_action == 'apply' }}
