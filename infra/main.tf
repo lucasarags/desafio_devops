@@ -108,12 +108,12 @@ resource "aws_cloudwatch_dashboard" "main" {
         type = "metric",
         properties = {
           metrics = [
-            ["AWS/ApplicationELB", "HealthyHostCount", "LoadBalancer", module.load_balancer.alb_arn_suffix]
+            ["AWS/ApplicationELB", "UnhealthyHostCount", "LoadBalancer", module.load_balancer.alb_arn_suffix]
           ],
           period = 300,
           stat   = "Average",
           region = var.aws_region,
-          title  = "Healthy Host Count",
+          title  = "Unhealthy Host Count",
           view   = "bar"
         }
       },

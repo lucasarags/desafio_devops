@@ -20,7 +20,17 @@
 
 ## 📅 Date: 2024-01-29  
 ### 🔹 Changes:  
-- Reverted `index` to version 1.0.0.  
+- Reverted `index.html` to version 1.0.0.  
 
 ### 👤 Author: @lucasarags  
 ### 📌 Commit: `6e0da2c`
+
+---
+
+## 📅 Date: 2024-01-29  
+### 🔹 Changes:  
+- created `CHANGUE.LOG`
+- destroy  
+
+### 👤 Author: @lucasarags  
+### 📌 Commit: `7c4eea4`
