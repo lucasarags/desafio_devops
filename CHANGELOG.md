@@ -34,3 +34,13 @@
 
 ### 👤 Author: @lucasarags  
 ### 📌 Commit: `7c4eea4`
+
+---
+
+## 📅 Date: 2024-02-03  
+### 🔹 Changes:  
+- created `assets/images`
+- finish the documentation 
+
+### 👤 Author: @lucasarags  
+### 📌 Commit: `7c4eea4`
