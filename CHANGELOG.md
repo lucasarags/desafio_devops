@@ -6,7 +6,7 @@
 - Added `instance_refresh` to `aws_autoscaling_group` to avoid manual recreation.    
 
 ### 👤 Author: @lucasarags  
-### 📌 Commit: `69de56c`  
+ 
 ---  
 ## 📅 Date: 2024-01-29  
 ### 🔹 Changes:  
@@ -14,33 +14,26 @@
 - Added a rolling update strategy to `aws_autoscaling_group` to ensure smooth instance updates.  
 
 ### 👤 Author: @lucasarags  
-### 📌 Commit: `9bbdf77`  
 
 ---
-
 ## 📅 Date: 2024-01-29  
 ### 🔹 Changes:  
 - Reverted `index.html` to version 1.0.0.  
 
 ### 👤 Author: @lucasarags  
-### 📌 Commit: `6e0da2c`
 
 ---
-
 ## 📅 Date: 2024-01-29  
 ### 🔹 Changes:  
 - created `CHANGUE.LOG`
 - destroy  
 
 ### 👤 Author: @lucasarags  
-### 📌 Commit: `7c4eea4`
 
 ---
-
 ## 📅 Date: 2024-02-03  
 ### 🔹 Changes:  
 - created `assets/images`
 - finish the documentation 
 
 ### 👤 Author: @lucasarags  
-### 📌 Commit: `7c4eea4`
