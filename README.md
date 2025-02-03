@@ -1,83 +1,83 @@
-# Documentação de Implantação: Aplicação Dockerizada Monitorada na AWS com Terraform
+# Deployment Documentation: Dockerized Application Monitored on AWS with Terraform
 
-## 1. Introdução
-A aplicação implementada é um Hello World simples, contêinerizada com Docker e implantada na AWS. Ela foi projetada para demonstrar a integração de diversas tecnologias modernas para construção e implantação de infraestruturas escaláveis e resilientes. O processo de provisionamento de toda a infraestrutura foi automatizado utilizando Terraform, o que permite a criação, gestão e modificação da infraestrutura como código.
+## 1. Introduction
+The implemented application is a simple Hello World, containerized with Docker and deployed on AWS. It was designed to demonstrate the integration of various modern technologies for building and deploying scalable and resilient infrastructures. The provisioning process for the entire infrastructure has been automated using Terraform, which allows the creation, management, and modification of infrastructure as code.
 
-### Tecnologias Utilizadas
-- **AWS**: Infraestrutura na nuvem.
-- **Terraform**: Ferramenta para provisionamento de infraestrutura como código.
-- **Docker**: Contêinerização da aplicação.
-- **CloudWatch**: Monitoramento da aplicação e infraestrutura.
-- **SNS (Simple Notification Service)**: Sistema de notificação de alertas.
-- **Application Load Balancer (ALB)**: Balanceamento de carga.
-- **Auto Scaling Group (ASG)**: Escalabilidade automática das instâncias EC2.
+### Technologies Used
+- **AWS**: Cloud infrastructure.
+- **Terraform**: Tool for provisioning infrastructure as code.
+- **Docker**: Containerization of the application.
+- **CloudWatch**: Monitoring of the application and infrastructure.
+- **SNS (Simple Notification Service)**: Notification system for alerts.
+- **Application Load Balancer (ALB)**: Load balancing.
+- **Auto Scaling Group (ASG)**: Automatic scaling of EC2 instances.
 
-## 2. Tecnologias e Arquitetura Implementada
+## 2. Technologies and Architecture Implemented
 
-![Arquitetura da Aplicação](assets/images/arquitetura.png)
+![Application Architecture](assets/images/arquitetura.png)
 
-### 2.1 Rede (VPC e Subnets)
-A infraestrutura de rede foi organizada dentro de uma **VPC (Virtual Private Cloud)**, utilizando as seguintes configurações:
-- **VPC (rte-wk6-vnet)** com CIDR `172.16.0.0/16`.
-- **Subnets públicas** distribuídas entre as zonas de disponibilidade (AZs) `us-east-1a` e `us-east-1b`.
-- **Internet Gateway** associado à VPC para permitir a comunicação com a internet.
+### 2.1 Network (VPC and Subnets)
+The network infrastructure was organized within a **VPC (Virtual Private Cloud)** with the following configurations:
+- **VPC (rte-wk6-vnet)** with CIDR `172.16.0.0/16`.
+- **Public Subnets** distributed across the availability zones (AZs) `us-east-1a` and `us-east-1b`.
+- **Internet Gateway** associated with the VPC to allow communication with the internet.
 
-### 2.2 Segurança
-A segurança da aplicação é garantida com dois grupos de segurança principais:
-- **rte-wk6-alb-security-group**: Controla o tráfego de entrada para o Load Balancer.
-- **rte-wk6-asg-security-group**: Define regras de tráfego para as instâncias da aplicação.
+### 2.2 Security
+The application’s security is ensured with two main security groups:
+- **rte-wk6-alb-security-group**: Controls incoming traffic to the Load Balancer.
+- **rte-wk6-asg-security-group**: Defines traffic rules for the application instances.
 
-### 2.3 Balanceamento de Carga
-**Application Load Balancer (ALB)**: Recebe as requisições HTTP na porta 80 e distribui o tráfego para as instâncias EC2.
-- **Target Group**: Monitora a saúde das instâncias EC2 e garante que o tráfego seja direcionado apenas para instâncias saudáveis.
+### 2.3 Load Balancing
+**Application Load Balancer (ALB)**: Receives HTTP requests on port 80 and distributes traffic to the EC2 instances.
+- **Target Group**: Monitors the health of the EC2 instances and ensures that traffic is directed only to healthy instances.
 
-### 2.4 Escalabilidade Automática
-**Auto Scaling Group (ASG)**: Ajusta automaticamente o número de instâncias EC2 conforme a demanda. A configuração atual define um número desejado de 3 instâncias, com mínimo de 2 e máximo de 5 instâncias.
-- **Launch Template**: Define a configuração das instâncias EC2, incluindo o tipo da instância (`t2.micro`) e a AMI (`ami-006dcf34c09e50022`).
+### 2.4 Auto Scaling
+**Auto Scaling Group (ASG)**: Automatically adjusts the number of EC2 instances based on demand. The current configuration defines a desired number of 3 instances, with a minimum of 2 and a maximum of 5 instances.
+- **Launch Template**: Defines the configuration of EC2 instances, including instance type (`t2.micro`) and AMI (`ami-006dcf34c09e50022`).
 
-### 2.5 Monitoramento e Alertas
-- **CloudWatch Dashboard**: Fornece métricas em tempo real sobre o tráfego do Load Balancer, utilização de CPU e tempo de resposta das instâncias EC2.
-- **Alarmes do CloudWatch**: Monitora a saúde das instâncias e notifica via SNS caso algum alarme seja disparado.
+### 2.5 Monitoring and Alerts
+- **CloudWatch Dashboard**: Provides real-time metrics on Load Balancer traffic, CPU utilization, and EC2 instance response time.
+- **CloudWatch Alarms**: Monitors the health of instances and sends notifications via SNS if any alarms are triggered.
 
-## 3. Fluxo do Usuário até a Aplicação
-1. O usuário acessa a aplicação via navegador (requisição HTTP na porta 80).
-2. O **Load Balancer (ALB)** recebe o tráfego e encaminha para uma instância EC2 ativa no **Target Group**.
-3. A instância EC2 processa a requisição e retorna a resposta ao ALB.
-4. O ALB encaminha a resposta de volta para o cliente.
-5. Se a demanda aumentar, o **Auto Scaling Group** cria novas instâncias EC2 automaticamente para garantir que a aplicação continue funcionando sem interrupções.
+## 3. User Flow to the Application
+1. The user accesses the application via a browser (HTTP request on port 80).
+2. The **Load Balancer (ALB)** receives the traffic and forwards it to an active EC2 instance in the **Target Group**.
+3. The EC2 instance processes the request and returns the response to the ALB.
+4. The ALB forwards the response back to the client.
+5. If demand increases, the **Auto Scaling Group** automatically creates new EC2 instances to ensure the application continues running without interruptions.
 
-## 4. Detalhes Técnicos sobre o Código
+## 4. Technical Details about the Code
 
 ### 4.1 Auto Scaling Group (ASG)
-O **Auto Scaling Group (ASG)** garante que o número de instâncias EC2 seja ajustado dinamicamente conforme a carga da aplicação. A configuração do ASG é detalhada da seguinte forma:
-- **desired_capacity**: Número de instâncias desejado (3 instâncias).
-- **max_size**: Número máximo de instâncias (5 instâncias).
-- **min_size**: Número mínimo de instâncias (2 instâncias).
-- **target_group_arns**: Associa as instâncias EC2 ao Target Group do ALB.
-- **launch_template**: Define o modelo de lançamento das instâncias, incluindo a AMI e tipo da instância.
+The **Auto Scaling Group (ASG)** ensures that the number of EC2 instances is dynamically adjusted according to the application load. The ASG configuration is detailed as follows:
+- **desired_capacity**: The desired number of instances (3 instances).
+- **max_size**: Maximum number of instances (5 instances).
+- **min_size**: Minimum number of instances (2 instances).
+- **target_group_arns**: Associates the EC2 instances with the ALB Target Group.
+- **launch_template**: Defines the launch template for instances, including AMI and instance type.
 
 ### 4.2 Launch Template
-O **Launch Template** define a configuração necessária para iniciar as instâncias EC2. As configurações incluem:
-- **image_id**: AMI utilizada para criar as instâncias EC2 (`ami-006dcf34c09e50022`).
-- **instance_type**: Tipo de instância (`t2.micro`).
-- **user_data**: Script executado automaticamente ao iniciar a instância, que instala o Docker, configura o ambiente e executa a aplicação no Docker.
+The **Launch Template** defines the configuration needed to launch EC2 instances. The configurations include:
+- **image_id**: The AMI used to create EC2 instances (`ami-006dcf34c09e50022`).
+- **instance_type**: Instance type (`t2.micro`).
+- **user_data**: A script that is automatically executed when the instance starts, which installs Docker, configures the environment, and runs the application within a Docker container.
 
 ### 4.3 Health Checks
-O **Target Group** associado ao ALB realiza verificações periódicas de saúde das instâncias EC2:
-- A instância é considerada saudável se a URL de saúde (`/health`) retornar um status HTTP 200.
-- Se uma instância falhar no Health Check, o tráfego é redirecionado para outra instância saudável.
+The **Target Group** associated with the ALB performs periodic health checks on EC2 instances:
+- The instance is considered healthy if the health URL (`/health`) returns an HTTP 200 status.
+- If an instance fails the Health Check, traffic is redirected to another healthy instance.
 
-## 5. Fluxo de Provisionamento e Execução
+## 5. Provisioning and Execution Flow
 
-### 5.1 Criação das Instâncias EC2
-1. O **Auto Scaling Group** inicia a criação de instâncias conforme o **Launch Template**.
-2. O **Launch Template** utiliza o **user_data**, que executa um script bash para configurar o Docker e iniciar a aplicação dentro de um contêiner Docker.
+### 5.1 Creation of EC2 Instances
+1. The **Auto Scaling Group** starts the creation of instances according to the **Launch Template**.
+2. The **Launch Template** uses **user_data**, which executes a bash script to set up Docker and start the application inside a Docker container.
 
-### 5.2 Escalabilidade e Monitoramento
-1. Se a carga aumentar, o **Auto Scaling Group** escala automaticamente para criar novas instâncias.
-2. O **CloudWatch** monitora a utilização de recursos e envia alertas via SNS caso os limites configurados sejam atingidos.
+### 5.2 Scalability and Monitoring
+1. If the load increases, the **Auto Scaling Group** scales automatically to create new instances.
+2. **CloudWatch** monitors resource utilization and sends alerts via SNS if configured limits are exceeded.
 
-## 6. Conclusão
-A infraestrutura foi implementada de maneira modular e escalável, garantindo alta disponibilidade e capacidade de responder a picos de demanda. Utilizando **Terraform** para provisionamento, **Docker** para contêinerização e **AWS** para gestão de infraestrutura, a aplicação é capaz de operar de maneira eficiente e ser facilmente escalada conforme necessário.
+## 6. Conclusion
+The infrastructure was implemented in a modular and scalable manner, ensuring high availability and the ability to respond to demand spikes. Using **Terraform** for provisioning, **Docker** for containerization, and **AWS** for infrastructure management, the application can operate efficiently and be easily scaled as needed.
 
-A monitorização contínua através de **CloudWatch** e os **Health Checks** implementados no ALB garantem que as instâncias da aplicação estejam sempre disponíveis e funcionando corretamente, com alertas configurados para notificar sobre qualquer falha na infraestrutura.
+Continuous monitoring through **CloudWatch** and the **Health Checks** implemented in the ALB ensure that the application instances are always available and functioning properly, with alerts configured to notify about any infrastructure failures.
