@@ -80,13 +80,7 @@ The policy is then attached to the role, enabling AWS resources to interact with
 #### 4.3.2 Running terraform apply
 After configuring the IAM role, run the `terraform apply` command to apply the configuration. This will create the IAM role and the attached policy.
 
-### 4.4 Defining Other Infrastructure Resources
-After setting up the S3 bucket, DynamoDB, and IAM role, you can define and apply other infrastructure modules such as VPC, security, load balancers, auto-scaling groups, and more. These resources will be defined in separate files such as `vpc.tf` for creating a VPC.
-
-In the `vpc.tf` file, you will define the settings for the VPC, public subnets, route tables, internet gateways, etc.
-This file may also include other network definitions such as security groups and load balancing.
-
-#### Next Steps:
+### 4.4 Defining the Provider Configuration
 After setting up the objects in the S3 bucket for permissions and policies with the `iam_role.tf`, the next step is to define and configure the `provider.tf` file. This file will be the main object where the provider is configured to manage all states when we run `terraform apply` on the `main.tf` application.
 
 ## 5. Technical Details about the Code
